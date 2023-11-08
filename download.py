@@ -1,4 +1,5 @@
 import pyautogui
+import pyperclip
 
 # https://spotifydown.com/
 # zoom out to 50%
@@ -15,24 +16,13 @@ yPosition2 = 435 #2nd track y position
 newYPos = 238 # after pressing Page down
 doDownload = False
 searchPos = [1031, 210]
+downloadPos = [817, 396]
 closePos = [968, 486]
 anotherPos = [1088, 391]
+outsidePos = [1564, 565]
 
 yPosDiff = yPosition2 - yPosition
 exceeded = False
-
-def verifyMouse():
-    
-    if count == maxTrackPerPage +2:
-        pyautogui.sleep(1)
-    if count == maxTrackPerPage +1:
-            pyautogui.sleep(1)
-            pyautogui.press('pagedown')
-            pyautogui.sleep(2)
-
-    pyautogui.moveTo(x=xPosition, y=yPosition, duration=0.2)
-    if count == maxTrackPerPage +1:
-        pyautogui.sleep(1)
 
 
 def trackmouse():
@@ -48,25 +38,59 @@ def trackmouse():
 
 # trackmouse()
 
-def download(scrollCount):
+def verifyMouse():
+    if count == maxTrackPerPage +2:
+        pyautogui.sleep(1)
+    if count == maxTrackPerPage +1:
+            pyautogui.sleep(1)
+            pyautogui.press('pagedown')
+            pyautogui.sleep(3)
+
+    pyautogui.moveTo(x=xPosition, y=yPosition, duration=0.2)
+    if count == maxTrackPerPage +1:
+        pyautogui.sleep(1)
+
+def checkStatus():
+    pyautogui.sleep(3)
+    while True:
+        pyautogui.click(x=outsidePos[0], y=outsidePos[1])
+        pyautogui.hotkey('ctrl', 'a')
+        pyautogui.hotkey('ctrl', 'c')
+        clipboard_text = pyperclip.paste()
+        # print(clipboard_text)
+        if "Download MP3" not in clipboard_text:
+            print("Not ready..")
+            pyautogui.sleep(2)
+        else: 
+            print("Ready")
+            break  
+
+def download():
     pyautogui.click(x=searchPos[0], y=searchPos[1]) # search bar
     pyautogui.typewrite(playlistLink) # paste link
     pyautogui.press('enter') # enter
-    pyautogui.sleep(5)
+    pyautogui.sleep(3)
 
-    if count == maxTrackPerPage +1:
+    if exceeded + 1:
         pyautogui.sleep(1)
-        pyautogui.press('pagedown')
+    if exceeded:
+        pyautogui.sleep(1)
+        pyautogui.press('pagedown') # move to next track
         pyautogui.sleep(2)
 
-    pyautogui.moveTo(x=xPosition, y=yPosition, duration=0.2)
-    # pyautogui.click() # download button
-    pyautogui.sleep(1)
-    # if scrollCount > 0:
-    #     pyautogui.press('home')
+    pyautogui.moveTo(x=xPosition, y=yPosition, duration=0.2) # move to next track
+    pyautogui.click() # download button
+    pyautogui.sleep(2)
+
+    if exceeded:
+        pyautogui.press('home')
+
+    # Enable one:
     # pyautogui.sleep(30)
-    # pyautogui.click(x=842, y=303) # download track
-    # pyautogui.sleep(3)
+    checkStatus()
+    
+    pyautogui.click(x=downloadPos[0], y=downloadPos[1]) # download track
+    pyautogui.sleep(3)
 
     # Name
     pyautogui.press('left')
@@ -83,47 +107,22 @@ def download(scrollCount):
     # Now at homepage
 
 
-
 pyautogui.click(x=1000, y=1062) # open chrome
 pyautogui.sleep(1)
 
+
 while count <= totalCount:
+    # break
 
-    # Download:
-    # download()
-    # if exceeded + 1:
-    #     pyautogui.sleep(1)
-    # if exceeded:
-    #         pyautogui.sleep(1)
-    #         pyautogui.press('pagedown')
-    #         pyautogui.sleep(2)
-    # pyautogui.moveTo(x=xPosition, y=yPosition, duration=0.2)
-    # pyautogui.click()
-    # if count == maxTrackPerPage + 1:
-    #     pyautogui.sleep(1)
+    download()
+    # verifyMouse()
 
-    verifyMouse()
-
+    # break
     yPosition += yPosDiff
     print(count)
     count += 1
+
     if count == maxTrackPerPage + 1:
         yPosition = newYPos
-    if count >= maxTrackPerPage + 1:
+    if count >= maxTrackPerPage + 1 and not exceeded:
         exceeded = True
-
-
-    # break
-    # verifyMouse()
-    # yPosition += yPosDiff
-    # if yPosition > 1030:
-    #     # if scroll == 1:
-    #     #     # 2 scroll
-    #     #     yPosition = 200
-
-    #     # 1 scroll
-    #     yPosition = 238
-    #     scroll += 1
-
-    # print(count)
-    # count += 1
