@@ -7,8 +7,10 @@ import pyperclip
 count = 1
 scroll = 0
 
-playlistLink = "https://open.spotify.com/playlist/06BMp2O4VZ3QgTw6V294oc"
-totalCount = 32
+playlistLink = "https://open.spotify.com/playlist/02p8plM6b2M2IOhvJDKM4E?si=061875beb2f54013"
+firstSongName = "We Are The People"
+# totalCount = 71
+totalCount = 30
 maxTrackPerPage = 16
 xPosition = 1183 #starting track x position
 yPosition = 395 #starting track y position
@@ -20,6 +22,8 @@ downloadPos = [817, 396]
 closePos = [968, 486]
 anotherPos = [1088, 391]
 outsidePos = [1564, 565]
+
+skipTo = 20 # False
 
 yPosDiff = yPosition2 - yPosition
 exceeded = False
@@ -50,27 +54,27 @@ def verifyMouse():
     if count == maxTrackPerPage +1:
         pyautogui.sleep(1)
 
-def checkStatus():
-    pyautogui.sleep(3)
+def checkStatus(text, sleepDuration = 3):
+    pyautogui.sleep(sleepDuration)
     while True:
         pyautogui.click(x=outsidePos[0], y=outsidePos[1])
         pyautogui.hotkey('ctrl', 'a')
         pyautogui.hotkey('ctrl', 'c')
         clipboard_text = pyperclip.paste()
         # print(clipboard_text)
-        if "Download MP3" not in clipboard_text:
-            print("Not ready..")
-            pyautogui.sleep(2)
+        if text not in clipboard_text:
+            print(count, "Not ready..", text)
+            pyautogui.sleep(sleepDuration)
         else: 
-            print("Ready")
+            print(count, "Ready", text)
             break  
 
 def download():
     pyautogui.click(x=searchPos[0], y=searchPos[1]) # search bar
     pyautogui.typewrite(playlistLink) # paste link
     pyautogui.press('enter') # enter
-    pyautogui.sleep(3)
-
+    checkStatus(firstSongName, 1)
+    
     if exceeded + 1:
         pyautogui.sleep(1)
     if exceeded:
@@ -87,7 +91,7 @@ def download():
 
     # Enable one:
     # pyautogui.sleep(30)
-    checkStatus()
+    checkStatus("Download MP3", 2)
     
     pyautogui.click(x=downloadPos[0], y=downloadPos[1]) # download track
     pyautogui.sleep(3)
@@ -112,12 +116,15 @@ pyautogui.sleep(1)
 
 
 while count <= totalCount:
-    # break
-
-    download()
-    # verifyMouse()
 
     # break
+
+    # download()
+    verifyMouse()
+
+    # break
+
+
     yPosition += yPosDiff
     print(count)
     count += 1
